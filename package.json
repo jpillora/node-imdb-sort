@@ -1,0 +1,19 @@
+{
+  "name": "imdb-sort",
+  "version": "0.0.0",
+  "description": "Sort videos files using an IMDB API lookup",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://jpillora@github.com/jpillora/node-imdb-sort.git"
+  },
+  "author": "Jaime Pillora",
+  "license": "MIT",
+  "dependencies": {
+    "coffee-script": "~1.6.2",
+    "colors": "~0.6.0-1"
+  }
+}
