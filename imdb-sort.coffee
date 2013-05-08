@@ -1,6 +1,9 @@
 
+path = require 'path'
 program = require 'optimist'
 SortGroup = require './sort-group'
+
+home = process.env.HOME or process.env.HOMEPATH or process.env.USERPROFILE
 
 # CLI
 program = program.
@@ -21,6 +24,11 @@ program = program.
     'alias'    : 'watch'
     'describe' : 'Watch directory for changes'
     'default'  : false
+  ).
+  options('c',
+    'alias'    : 'config'
+    'describe' : '\'imdb-sort\' configuration file'
+    'default'  : path.join home, 'imdb-sort.json'
   )
 
 argv = program.argv
@@ -28,4 +36,7 @@ if argv.h or argv.help or argv.v or argv.version
   console.log program.help()
   return
 
-new SortGroup argv
+Config = new SortConfig argv
+Group = new SortGroup argv
+
+#runs...

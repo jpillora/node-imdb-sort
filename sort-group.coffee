@@ -3,7 +3,6 @@ require "colors"
 fs = require "fs"
 path = require "path"
 SortFile = require "./sort-file"
-home = process.env.HOME or process.env.HOMEPATH or process.env.USERPROFILE
 
 #sorter class
 module.exports = class SortGroup
@@ -32,7 +31,6 @@ module.exports = class SortGroup
     @sortFiles()
 
   sortFiles: ->
-
     @paths.sort()
 
     for p in @paths
