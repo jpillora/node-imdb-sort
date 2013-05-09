@@ -9,12 +9,11 @@ module.exports = class SortGroup
 
   constructor: (@argv, @config) ->
     @paths = []
-    @recursiveDepth = if @argv.r then 3 else 1
 
   run: ->
     @scanDir @argv.directory
 
-  scanDir: (dir, depth = @recursiveDepth) ->
+  scanDir: (dir, depth = @argv.r) ->
     return if depth is 0
     files = fs.readdirSync dir
     throw "Read dir: #{dir} failed" unless files

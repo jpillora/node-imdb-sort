@@ -18,15 +18,17 @@ module.exports = class SortFile
     #extract important data, remove rubbish
     @extract {ext:1}, /\.(\w+)$/
     return unless @data.ext in exts
+    @extract null, /\ -/g
     @extract null, /[^A-Za-z0-9]/g, 0, ' '
     @extract null, /\b(hdtv|brrip|dvdrip|dvdscr|bluray|ac3|subs)\b/gi
-    @extract {year:1}, /\b(19\d\d|20\d\d)\b/
+    @extract {title:1,year:2}, /(.*)\b(19\d\d|20\d\d)\b/
     @extract {quality:1}, /(720|1080)p/
-    @extract {encoding:0}, /(x264|divx|xvid)/i
-    @extract {season:2,episode:4}, /(S|Season\s*)(\d+)\s*(E|Episode\s*)(\d+)/i
+    @extract {encoding:1}, /(x264|divx|xvid)/i
+    @extract {title:1,season:3,episode:5}, /(.*)\b(S|Season\s*)(\d+)\s*(E|Episode\s*)(\d+)/i
     unless @data.season and @data.episode
-      @extract {season:1,episode:2}, /\b(\d{1})(\d{2})\b/
-    @extract {title:0}, /([A-Za-z0-9]+\ ?)+[A-Za-z0-9]+/
+      @extract {title:1,season:2,episode:3}, /(.*)\b(\d{1})(\d{2})\b/
+    unless @data.title
+      @extract {title:0}, /([A-Za-z0-9]+\ ?)+[A-Za-z0-9]+/
     #start search
     @found = null
     #series if has season and episode
@@ -82,11 +84,13 @@ module.exports = class SortFile
 
     finalPath = "#{path.join(dir, fileName)}.#{@data.ext}"
 
-    console.log """Moving: '#{@fullPath}' to
-                   .       '#{finalPath}'""".green
+    console.log "Moving: '#{@fullPath.green}' to\n" +
+                "        '#{finalPath.green}'"
 
     if not @config.replaceExisting and fs.existsSync finalPath
       return console.log "Will not overwrite: #{@fullPath}"
+
+    return if @group.argv.preview
 
     #create missing dirs
     mkdirp.sync dir

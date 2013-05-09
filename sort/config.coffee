@@ -13,6 +13,8 @@ module.exports =
     else
       @gen()
 
+
+
   gen: ->
     console.log "Config generation not implemented".red
     process.exit(1)
@@ -27,5 +29,6 @@ module.exports =
       @config = JSON.parse contents
     catch e
       return @done e
+
     #ready
     @done null, @config

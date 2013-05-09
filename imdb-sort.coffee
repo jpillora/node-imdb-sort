@@ -18,8 +18,8 @@ program = program.
   ).
   options('r',
     'alias'    : 'recursive'
-    'describe' : 'Scan subdirectories'
-    'default'  : false
+    'describe' : 'Recursive depth (default: current directory)'
+    'default'  : 1
   ).
   options('w',
     'alias'    : 'watch'
@@ -29,7 +29,12 @@ program = program.
   options('c',
     'alias'    : 'config'
     'describe' : 'Path to \'imdb-sort.json\' configuration file'
-    'default'  : path.join home, 'Code', 'Node', 'node-imdb-sort', 'example', 'imdb-sort.json'
+    'default'  : path.join home, '.imdb-sort', 'config.json'
+  ). # 'Code', 'Node', 'node-imdb-sort', 'example',
+  options('p',
+    'alias'    : 'preview'
+    'describe' : 'Print to console instead of moving files'
+    'default'  : false
   )
 
 argv = program.argv
