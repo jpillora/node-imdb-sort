@@ -1,15 +1,17 @@
 
-require "colors"
+
 fs = require "fs"
 path = require "path"
-SortFile = require "./sort-file"
+SortFile = require "./file"
 
 #sorter class
 module.exports = class SortGroup
 
-  constructor: (@argv) ->
+  constructor: (@argv, @config) ->
     @paths = []
     @recursiveDepth = if @argv.r then 3 else 1
+
+  run: ->
     @scanDir @argv.directory
 
   scanDir: (dir, depth = @recursiveDepth) ->
@@ -18,7 +20,6 @@ module.exports = class SortGroup
     throw "Read dir: #{dir} failed" unless files
 
     for f in files
-      console.log f
       continue if /^\./.test f
       p = path.join dir,f
       stats = fs.statSync p
@@ -34,5 +35,7 @@ module.exports = class SortGroup
     @paths.sort()
 
     for p in @paths
-      console.log p.yellow
-    # new SortFile p
+      f = new SortFile p, @
+      f.run()
+
+

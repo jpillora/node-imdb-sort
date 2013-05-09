@@ -1,15 +1,16 @@
 
+require "colors"
 path = require 'path'
 program = require 'optimist'
-SortGroup = require './sort-group'
+SortGroup = require './sort/group'
+SortConfig = require './sort/config'
 
 home = process.env.HOME or process.env.HOMEPATH or process.env.USERPROFILE
 
 # CLI
 program = program.
-  usage("""Organises Movies and TV Shows using IMDB.
-           Usage: imdb-sort [Options]
-           Version: 0.0.1""").
+  usage("""Organises Movies and TV Shows using IMDB v0.0.1
+           Usage: imdb-sort [Options]""").
   options('d',
     'alias'    : 'directory'
     'describe' : 'The directory to scan'
@@ -27,16 +28,18 @@ program = program.
   ).
   options('c',
     'alias'    : 'config'
-    'describe' : '\'imdb-sort\' configuration file'
-    'default'  : path.join home, 'imdb-sort.json'
+    'describe' : 'Path to \'imdb-sort.json\' configuration file'
+    'default'  : path.join home, 'Code', 'Node', 'node-imdb-sort', 'example', 'imdb-sort.json'
   )
 
 argv = program.argv
 if argv.h or argv.help or argv.v or argv.version
-  console.log program.help()
+  console.log "#{program.help()}".cyan
   return
 
-Config = new SortConfig argv
-Group = new SortGroup argv
+SortConfig.load argv, (err, config) ->
+  group = new SortGroup argv, config
+  group.run()
 
-#runs...
+
+
