@@ -1,5 +1,8 @@
 {
   "name": "imdb-sort",
+  "bin": {
+    "imdb-sort": "./bin/imdb-sort"
+  },
   "version": "0.0.1",
   "description": "Sort videos files using an IMDB API lookup",
   "main": "index.js",
@@ -18,6 +21,7 @@
     "google": "~0.3.0",
     "request": "~2.21.0",
     "mkdirp": "~0.3.5",
-    "lodash": "~1.2.1"
+    "lodash": "~1.2.1",
+    "optimist": "~0.4.0"
   }
 }

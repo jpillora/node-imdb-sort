@@ -5,7 +5,8 @@ program = require 'optimist'
 SortGroup = require './sort/group'
 SortConfig = require './sort/config'
 
-home = process.env.HOME or process.env.HOMEPATH or process.env.USERPROFILE
+global.home = process.env.HOME or process.env.HOMEPATH or process.env.USERPROFILE
+global.pwd = process.cwd()
 
 # CLI
 program = program.
@@ -14,7 +15,7 @@ program = program.
   options('d',
     'alias'    : 'directory'
     'describe' : 'The directory to scan'
-    'default'  : process.cwd()
+    'default'  : pwd
   ).
   options('r',
     'alias'    : 'recursive'
@@ -41,6 +42,9 @@ argv = program.argv
 if argv.h or argv.help or argv.v or argv.version
   console.log "#{program.help()}".cyan
   return
+
+#resolve relatives
+argv.d = argv.directory = path.resolve(argv.d)
 
 SortConfig.load argv, (err, config) ->
   group = new SortGroup argv, config

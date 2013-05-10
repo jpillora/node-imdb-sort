@@ -1,0 +1,1 @@
+node ../ --config ./config.json --directory ./files --preview

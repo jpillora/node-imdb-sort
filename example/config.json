@@ -2,14 +2,14 @@
   "replaceExisting": true,
   "tvshows" : {
     "fileName": "{{ Title }} - Season {{ Season }} Episode {{ Episode }}",
-    "root": "/Users/jpillora/Movies/TV Shows/",
+    "root": "~/TV Shows/",
     "directoryPerShow": true,
     "showName": "{{ Title }}",
-    "directoryPerSeason": true,
+    "directoryPerSeason": false,
     "seasonName": "Season {{ Season }}"
   },
   "movies": {
     "fileName": "{{ Title }} ({{ Year }})",
-    "root": "/Users/jpillora/Movies/Movies/"
+    "root": "~/files/Movies/"
   }
 }
