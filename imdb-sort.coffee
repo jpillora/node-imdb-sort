@@ -11,7 +11,7 @@ global.pwd = process.cwd()
 # CLI
 program = program.
   usage("""Organises Movies and TV Shows using IMDB v0.0.1
-           Usage: imdb-sort [Options]""").
+           Usage: imdb-sort [options]""").
   options('d',
     'alias'    : 'directory'
     'describe' : 'The directory to scan'
@@ -31,20 +31,25 @@ program = program.
     'alias'    : 'config'
     'describe' : 'Path to \'imdb-sort.json\' configuration file'
     'default'  : path.join home, '.imdb-sort', 'config.json'
-  ). # 'Code', 'Node', 'node-imdb-sort', 'example',
+  ).
   options('p',
     'alias'    : 'preview'
-    'describe' : 'Print to console instead of moving files'
+    'describe' : 'Dry run only (will not move any files)'
+    'default'  : false
+  ).
+  options('s',
+    'alias'    : 'setup'
+    'describe' : 'Setup wizard to create or edit the default config'
     'default'  : false
   )
 
 argv = program.argv
 if argv.h or argv.help or argv.v or argv.version
-  console.log "#{program.help()}".cyan
-  return
+  return program.showHelp(console.error)
 
 #resolve relatives
 argv.d = argv.directory = path.resolve(argv.d)
+argv.c = argv.config    = path.resolve(argv.c)
 
 SortConfig.load argv, (err, config) ->
   group = new SortGroup argv, config

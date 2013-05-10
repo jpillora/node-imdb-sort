@@ -2,7 +2,7 @@
   "replaceExisting": true,
   "tvshows" : {
     "fileName": "{{ Title }} - Season {{ Season }} Episode {{ Episode }}",
-    "root": "~/TV Shows/",
+    "root": "./TV Shows/",
     "directoryPerShow": true,
     "showName": "{{ Title }}",
     "directoryPerSeason": false,
@@ -10,6 +10,6 @@
   },
   "movies": {
     "fileName": "{{ Title }} ({{ Year }})",
-    "root": "~/files/Movies/"
+    "root": "./Movies/"
   }
 }

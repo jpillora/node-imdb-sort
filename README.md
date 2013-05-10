@@ -57,7 +57,6 @@ Usable template keys are:
   imdbVotes: '141,852',
   imdbID: 'tt0411008',
   Type: 'series',
-  Response: 'True',
   Season: 1,
   Episode: 5
 }
