@@ -13,6 +13,7 @@ module.exports = class SortGroup
 
   run: ->
     @scanDir @argv.directory
+    @sortFiles()
 
   scanDir: (dir, depth = @argv.r) ->
     return if depth is 0
@@ -32,8 +33,6 @@ module.exports = class SortGroup
       else
         file = new SortFile p, @
         @files.push file if file.ready
-
-    @sortFiles()
 
   sortFiles: ->
     console.log "Found #{@files.length} video files.".grey
