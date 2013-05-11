@@ -28,6 +28,11 @@ program = program.
     'describe' : 'Recursive depth (default: current directory)'
     'default'  : 1
   ).
+  options('f',
+    'alias'    : 'filter'
+    'describe' : 'Process filepaths matching this regular expression'
+    'default'  : null
+  ).
   options('w',
     'alias'    : 'watch'
     'describe' : 'Watch directory for changes'
@@ -45,16 +50,18 @@ argv = program.argv
 if argv.h or argv.help or argv.v or argv.version
   return program.showHelp(console.error)
 
-#resolve relatives
+#calculate arguments
 argv.d = argv.directory = path.resolve(argv.d)
 argv.c = argv.config    = path.resolve(argv.c)
+argv.r = argv.recursive = 3 if argv.r is true
+try
+  argv.f = argv.filter    = new RegExp argv.f if argv.f
+catch e
+  return console.log "Invalid regex filter: #{e}".red
 
-if argv.p
-  console.log "PREVIEW MODE".yellow
+console.log "PREVIEW MODE".yellow if argv.p
 
-if argv.r is true
-  argv.r = argv.recursive = 3
-
+#load config then run
 SortConfig.load argv, (err, config) ->
   group = new SortGroup argv, config
   group.run()

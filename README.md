@@ -23,6 +23,7 @@ Options:
   -c, --config     Path to 'imdb-sort.json' configuration file        [default: "/Volumes/jpillora/.imdb-sort/config.json"]
   -d, --directory  The directory to scan                              [default: "/Volumes/jpillora/Code/Node/node-imdb-sort"]
   -r, --recursive  Recursive depth (default: current directory)       [default: 1]
+  -f, --filter     Process filepaths matching this regular expression
   -w, --watch      Watch directory for changes                        
   -p, --preview    Dry run only (will not move any files)
   -s, --setup      Setup wizard to create or edit the config

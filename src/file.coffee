@@ -20,6 +20,7 @@ module.exports = class SortFile
     #extract important data, remove rubbish
     @extract {ext:1}, /\.(\w+)$/
     return unless @data.ext in @config.fileExtensions
+    return if @group.argv.f and not @group.argv.f.test @fullPath
     @extract null, /\ -/g
     @extract null, /[^A-Za-z0-9]/g, 0, ' '
     @extract null, /\b(hdtv|brrip|dvdrip|dvdscr|bluray|ac3|subs)\b/gi
