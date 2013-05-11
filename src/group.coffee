@@ -17,13 +17,16 @@ module.exports = class SortGroup
   scanDir: (dir, depth = @argv.r) ->
     return if depth is 0
     dirfiles = fs.readdirSync dir
-    throw "Read dir: #{dir} failed" unless dirfiles
+    unless dirfiles
+      console.log "Read dir failed on '#{dir}'".red
 
     for f in dirfiles
       continue if /^\./.test f
       p = path.join dir,f
       stats = fs.statSync p
-      throw "Stat file: #{p} failed" unless stats
+      unless stats
+        console.log "Stat file failed on '#{p}'".red
+        continue
       if stats.isDirectory()
         @scanDir p, depth-1
       else

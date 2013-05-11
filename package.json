@@ -3,7 +3,7 @@
   "bin": {
     "imdb-sort": "./bin/imdb-sort"
   },
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Sort videos files using an IMDB API lookup",
   "main": "./out/index.js",
   "scripts": {

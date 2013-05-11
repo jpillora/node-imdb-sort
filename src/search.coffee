@@ -33,7 +33,8 @@ module.exports =
 
     console.log "Google searching IMDB for '#{key}'...".grey
     google "site:www.imdb.com #{key}", (err, next, links) =>
-      throw err if err
+      return done err if err
+      return done "No results for '#{key}'" if links.length is 0
       l = links[0].link
       m = l.match /^http:\/\/www\.imdb\.com\/.*\/(tt\d+)\//
       unless m
@@ -49,6 +50,9 @@ module.exports =
           result = JSON.parse res.body
         catch e
           err = e unless err
+
+        if Object.keys(result).length is 0
+          err = "No data for item '#{id}'"
 
         unless err
           cache[key] = result

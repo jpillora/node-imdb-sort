@@ -26,7 +26,7 @@ validators =
       for t in templates
         k = t.match(/\{\{\s*(\w+)\s*\}\}/)[1]
         unless k and k in keys
-          console.log "error:".red + "   Contains invalid template key: '#{k.red}'\n  It can be one of [#{keys}]"
+          console.log "error:".red + "Contains invalid template key: '#{k.red}'\n  It can be one of [#{keys}]"
           return false
       true
     message: ""
@@ -97,7 +97,7 @@ module.exports =
     flat = {}
     visit = (o, parent = '') ->
       for k,v of o
-        throw 'Dot in config key!' if /\./.test k
+        throw "Dot in config key: '#{k}'!" if /\./.test k
         if _.isPlainObject(v) and not v.description and not v.default
           visit v, k
         else

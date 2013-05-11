@@ -14,22 +14,23 @@ module.exports = class SortFile
   constructor: (p, @group) ->
     # console.log "NEW FILE #{p}".yellow
     @fullPath = p
-    @config = @group.config
+    { @config, @argv } = @group
     @orig = @file = path.basename @fullPath
     @data = {}
     #extract important data, remove rubbish
     @extract {ext:1}, /\.(\w+)$/
     return unless @data.ext in @config.fileExtensions
-    return if @group.argv.f and not @group.argv.f.test @fullPath
+    return if @argv.f and not @argv.f.test @fullPath
+    return if @argv.i and @argv.i.test @fullPath
     @extract null, /\ -/g
     @extract null, /[^A-Za-z0-9]/g, 0, ' '
     @extract null, /\b(hdtv|brrip|dvdrip|dvdscr|bluray|ac3|subs)\b/gi
     @extract {title:1,year:2}, /(.*)\b(19\d\d|20\d\d)\b/
     @extract {quality:1}, /(720|1080)p/
     @extract {encoding:1}, /(x264|divx|xvid)/i
-    @extract {title:1,season:3,episode:5}, /(.*)\b(S|Season)[\.-]?\s*(\d+)\s*(E|Episode)[\.-]?\s*(\d+)/i
+    @extract {title:1,season:3,episode:5}, /(.*)\b(S|Season)[\.-]?\s*(\d+)\s*.{0,3}\s*(E|Episode)[\.-]?\s*(\d+)/i
     unless @data.season and @data.episode
-      @extract {title:1,season:2,episode:3}, /(.*)\b(\d{1,2})x?(\d{2})\b/
+      @extract {title:1,season:2,episode:3}, /(.*)\b(\d{1,2}).?(\d{2})\b/
     unless @data.title
       @extract {title:0}, /([A-Za-z0-9]+\ ?)+[A-Za-z0-9]+/
     #start search
@@ -47,8 +48,17 @@ module.exports = class SortFile
 
   run: (@done) ->
     return unless @ready
+
+    if @argv.debug
+      console.log "RUN FILE: #{@fullPath}\n with data: #{JSON.stringify @data, null, 2}\n".yellow
+      return
+
     SortSearch.search @data.title, @preference, (err, result) =>
-      throw err if err or not result
+      if err
+        console.log "Search error: #{err}".red
+        @done()
+        return 
+
       @result = _.clone result
       @move()
 
@@ -91,7 +101,7 @@ module.exports = class SortFile
     @finalPath = "#{path.join(dir, fileName)}.#{@data.ext}"
 
 
-    if @group.argv.preview
+    if @argv.preview
       @success("PREIVEW. Did not move")
       @handleSubs()
       return
@@ -116,7 +126,7 @@ module.exports = class SortFile
     subsTo = @subtitlePath(@finalPath)
 
     if fs.existsSync subsFrom
-      if @group.argv.preview
+      if @argv.preview
         @displayMessage subsFrom, subsTo, "PREIVEW. Did not move subtitles"
         return
 

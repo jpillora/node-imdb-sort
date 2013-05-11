@@ -33,6 +33,11 @@ program = program.
     'describe' : 'Process filepaths matching this regular expression'
     'default'  : null
   ).
+  options('i',
+    'alias'    : 'inverse-filter'
+    'describe' : 'Process filepaths not matching this regular expression'
+    'default'  : null
+  ).
   options('w',
     'alias'    : 'watch'
     'describe' : 'Watch directory for changes'
@@ -44,6 +49,11 @@ program = program.
   options('s',
     'alias'    : 'setup'
     'describe' : 'Setup wizard to create or edit the default config'
+  ).
+  options('z',
+    'alias'    : 'debug'
+    'describe' : 'Debug mode'
+    'default'  : false
   )
 
 argv = program.argv
@@ -55,7 +65,8 @@ argv.d = argv.directory = path.resolve(argv.d)
 argv.c = argv.config    = path.resolve(argv.c)
 argv.r = argv.recursive = 3 if argv.r is true
 try
-  argv.f = argv.filter    = new RegExp argv.f if argv.f
+  argv.i = argv['inverse-filter'] = new RegExp argv.i if argv.i
+  argv.f = argv.filter            = new RegExp argv.f if argv.f
 catch e
   return console.log "Invalid regex filter: #{e}".red
 
@@ -63,6 +74,7 @@ console.log "PREVIEW MODE".yellow if argv.p
 
 #load config then run
 SortConfig.load argv, (err, config) ->
+  return console.log "Error loading config: #{err}" if err
   group = new SortGroup argv, config
   group.run()
 
