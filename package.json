@@ -3,11 +3,12 @@
   "bin": {
     "imdb-sort": "./bin/imdb-sort"
   },
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Sort videos files using an IMDB API lookup",
-  "main": "index.js",
+  "main": "./out/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "./node_modules/coffee-script/bin/coffee -w -o out/ src/"
   },
   "repository": {
     "type": "git",
@@ -16,7 +17,6 @@
   "author": "Jaime Pillora",
   "license": "MIT",
   "dependencies": {
-    "coffee-script": "~1.6.2",
     "colors": "~0.6.0-1",
     "google": "~0.3.0",
     "mkdirp": "~0.3.5",
@@ -24,5 +24,8 @@
     "optimist": "~0.4.0",
     "prompt": "~0.2.9",
     "superagent": "~0.14.2"
+  },
+  "devDependancies": {
+    "coffee-script": "~1.6.2"
   }
 }

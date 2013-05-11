@@ -13,6 +13,21 @@ Sort files based on IMDB data
 
 *Note: On first run a setup wizard will run prompting you to create the configuration file below. Default location is `~/.imdb-sort/config.json`*
 
+### Help Output
+
+```
+Organises Movies and TV Shows using IMDB v0.0.2
+Usage: imdb-sort [options]
+
+Options:
+  -d, --directory  The directory to scan                              [default: "/Volumes/jpillora/Code/Node/node-imdb-sort"]
+  -r, --recursive  Recursive depth (default: current directory)       [default: 1]
+  -w, --watch      Watch directory for changes                        [default: false]
+  -c, --config     Path to 'imdb-sort.json' configuration file        [default: "/Volumes/jpillora/.imdb-sort/config.json"]
+  -p, --preview    Dry run only (will not move any files)             [default: false]
+  -s, --setup      Setup wizard to create or edit the default config  [default: false]
+```
+
 ### Configuration
 
 `config.json`
@@ -61,3 +76,10 @@ Usable template keys are:
   Episode: 5
 }
 ```
+
+# Contributing
+
+The source is CoffeeScript
+* Get deps with `npm install`
+* Compile with `npm start`
+* For testing, make a symbolic link with `ln -s ./bin/imdb-sort [a-folder-in-your-PATH]`

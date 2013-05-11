@@ -1,18 +1,18 @@
 
-
 _ = require "lodash"
 fs = require "fs"
 path = require "path"
 strip = require("colors").stripColors
 prompt = require "prompt"
-prompt.message = "imdb-sort"
+prompt.message = "imdb-sort".yellow
 prompt.colors = false
 
 #allowed template keys
 keys = ['Title','Year','Rated','Released','Runtime','Genre','Director','Writer',
         'Actors','Plot','Poster','imdbRating','imdbVotes','imdbID','Type','Season','Episode']
 
-videoDir = if path.existsSync(path.join(home,'Videos')) then 'Videos' else 'Movies'
+videoDirName = if fs.existsSync(path.join(home,'Movies')) then 'Movies' else 'Videos'
+defaultVideoDir = path.join home, videoDirName
 
 validators =
   bool:
@@ -21,9 +21,10 @@ validators =
     before: (str) -> strip(str) is 'true'
   template:
     conform: (str) ->
-      for t in str.match(/\{\{\s*(\w+)\s*\}\}/g)
+      templates = str.match(/\{\{\s*(\w+)\s*\}\}/g) or []
+      for t in templates
         k = t.match(/\{\{\s*(\w+)\s*\}\}/)[1]
-        unless k in keys
+        unless k and k in keys
           console.log "error:".red + "   Contains invalid template key: '#{k.red}'\n  It can be one of [#{keys}]"
           return false
       true
@@ -42,7 +43,7 @@ defaultSchema =
       validator: 'template'
     root:
       description: "The root directory for your TV shows"
-      default: "~/#{videoDir}/TV Shows/"
+      default: path.join defaultVideoDir, "TV Shows"
     directoryPerShow:
       description: "Create a directory per TV show"
       default: true
@@ -65,9 +66,8 @@ defaultSchema =
       validator: 'template'
     root:
       description: "The root directory for your movies"
-      default: "~/#{videoDir}/Movies/"
+      default: path.join defaultVideoDir, "Movies"
 
-#
 module.exports =
   load: (@argv, @done) ->
     @path = @argv.config
@@ -97,13 +97,11 @@ module.exports =
         if _.isPlainObject(v) and not v.description and not v.default
           visit v, k
         else
-
           if v.validator and (vObj = validators[v.validator])
             delete v.validator
             _.extend v, vObj
-
-          if v.default isnt `undefined`
-            v.default = "#{v.default}".cyan
+          # v.description += "\nenter to use"
+          v.default = "#{v.default}".cyan
 
           key = (if parent then parent+"." else '')+k
           flat[key] = v
@@ -128,32 +126,35 @@ module.exports =
   gen: ->
 
     console.log """
-      Welcome to #{'IMDb'.yellow} Sort. A configuration file could not be found, please take a minute to create one now.
-      It will be created here:
-        "#{@path}"
-        You can change this with the -c option
+      Welcome to #{'IMDb Sort'.yellow}. Your default configuration file will now be generated and saved at this location:
+        "#{@path.yellow}"
+      Please follow the prompts below.
+      To use an alternative configuration, use the -c option.
 
       Note:
-        * Default values are in the brackets "( ... )"
-        * Template strings are inside the double curlys "{{ ... }}"
-        * Paths starting with "~/" will get converted to "#{home}/"
+        * Default values are in the brackets "( #{'...'.cyan} )"
+        * Placeholder strings are denoted by the double curlys "{{ ... }}"
+        * Paths starting with "~#{path.sep}" will get converted to "#{home}#{path.sep}"
 
     """
 
     prompt.start()
     prompt.get @schemafy(@config), (err, result) =>
-
       @config = @objectify result
-
-      console.log err or @config
-      process.exit(1)
-
-    # get user input to first fill config
-    #       mac     pc
-    # HOME/Movies|Videos/Movies|TV Shows
+      @write()
 
   write: ->
-    #write @config to @path
+      
+    configStr = JSON.stringify @config, null, 2
+
+    console.log "WRITE", configStr
+    return
+    
+    mkdirp.sync path.dirname @path
+
+    fs.writeFile @path, configStr, (err) =>
+      return @done err if err
+      @done null, @config
 
   read: ->
     fs.readFile @path, (err, contents) =>
