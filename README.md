@@ -16,19 +16,19 @@ Sort files based on IMDB data
 ### Help Output
 
 ```
-Organises Movies and TV Shows using IMDB v0.0.2
+Organises Movies and TV Shows using IMDB v0.0.3
 Usage: imdb-sort [options]
 
 Options:
+  -c, --config     Path to 'imdb-sort.json' configuration file        [default: "/Volumes/jpillora/.imdb-sort/config.json"]
   -d, --directory  The directory to scan                              [default: "/Volumes/jpillora/Code/Node/node-imdb-sort"]
   -r, --recursive  Recursive depth (default: current directory)       [default: 1]
-  -w, --watch      Watch directory for changes                        [default: false]
-  -c, --config     Path to 'imdb-sort.json' configuration file        [default: "/Volumes/jpillora/.imdb-sort/config.json"]
-  -p, --preview    Dry run only (will not move any files)             [default: false]
-  -s, --setup      Setup wizard to create or edit the default config  [default: false]
+  -w, --watch      Watch directory for changes
+  -p, --preview    Dry run only (will not move any files)
+  -s, --setup      Setup wizard to create or edit the default config
 ```
 
-*Note: If you specific `-r` without a depth - `3` will be used.
+*Note: If you specific `-r` without a depth; `3` will be used.
 
 ### Configuration
 

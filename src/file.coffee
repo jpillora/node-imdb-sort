@@ -5,6 +5,8 @@ fs = require "fs"
 path = require "path"
 SortSearch = require "./search"
 
+fileNameBlacklist = ['/','\'','?','%','*','o',':','|','o','"','<','>','.']
+fileNameRegex = new RegExp "[#{fileNameBlacklist.map((s)->"\\#{s}").join('')}]"
 
 #sorter class
 module.exports = class SortFile
@@ -82,6 +84,8 @@ module.exports = class SortFile
         dir = path.join dir, @template typeConfig.seasonName, @result
 
     fileName = @template typeConfig.fileName, @result
+    #delete disallowed filename chars
+    fileName = fileName.replace fileNameRegex, ''
 
     @finalPath = "#{path.join(dir, fileName)}.#{@data.ext}"
 
@@ -101,7 +105,7 @@ module.exports = class SortFile
 
   cleanPath: (full) ->
     rela = path.relative pwd, full
-    (if /^(..\/){2,}/.test(rela) then full else "./#{rela}").green
+    (if /^(..\/){2,}/.test(rela) then full else ".#{path.sep}#{rela}").green
 
   success: (preview) ->
     console.log "#{if preview then 'Preview ' else ''}Move:\n  " +
