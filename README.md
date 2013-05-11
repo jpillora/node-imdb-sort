@@ -16,7 +16,7 @@ Sort files based on IMDB data
 ### Help Output
 
 ```
-Organises Movies and TV Shows using IMDB v0.0.3
+Organises Movies and TV Shows using IMDB v0.0.4
 Usage: imdb-sort [options]
 
 Options:
@@ -58,10 +58,15 @@ Inside your configuration, `fileName`, `showName` and `seasonName` can be used t
 
 Usable template keys are: `Title`,`Year`,`Season`,`Episode`,`Rated`,`Released`,`Runtime`,`Genre`,`Director`,`Writer`,`Actors`,`Plot`,`Poster`,`imdbRating`,`imdbVotes`,`imdbID`,`Type`
 
+### Known Issues
+
+It is possible to get temporarily blocked by Google for sending too many requests.
+
 ### Todo
 
 * Modify metadata
 * Episode names
+* Lazy match on subtitles file
 
 ### Contributing
 

@@ -1,10 +1,20 @@
 
-request = require "superagent"
+http = require "http"
+request = (url, done) ->
+  throw "Invalid URL" unless (m = url.match /^http:\/\/([^\/]+)(.*)/)
+  http.request({ host:m[1], path:m[2] }, (res) ->
+    str = ''
+    res.on 'data', (c) -> str += c
+    res.on 'end', -> res.body = str; done res
+  ).end()
+
 google = require "google"
 google.resultsPerPage = 1
 
 cache = {}
 loading = {}
+
+
 
 module.exports =
 
@@ -31,12 +41,12 @@ module.exports =
         return
       id = m[1]
       console.log "Retrieving IMDB item '#{id}'...".grey
-      request.get "http://www.omdbapi.com/?i=#{id}", (res) =>
+      request "http://www.omdbapi.com/?i=#{id}", (res) =>
 
-        err = res.text if res.status isnt 200
+        err = res.body if res.statusCode isnt 200
 
         try
-          result = JSON.parse res.text
+          result = JSON.parse res.body
         catch e
           err = e unless err
 

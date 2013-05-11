@@ -148,7 +148,7 @@ module.exports =
       @write()
 
   write: ->
-      
+    console.log "Writing config '#{@path}'".grey
     configStr = JSON.stringify @config, null, 2
     
     mkdirp.sync path.dirname @path

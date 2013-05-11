@@ -5,7 +5,7 @@ fs = require "fs"
 path = require "path"
 SortSearch = require "./search"
 
-fileNameBlacklist = ['/','\'','?','%','*','o',':','|','o','"','<','>','.']
+fileNameBlacklist = ['/','\'','?','%','*',':','|','"','<','>','.']
 fileNameRegex = new RegExp "[#{fileNameBlacklist.map((s)->"\\#{s}").join('')}]"
 
 #sorter class
@@ -89,11 +89,15 @@ module.exports = class SortFile
 
     @finalPath = "#{path.join(dir, fileName)}.#{@data.ext}"
 
-    if not @config.replaceExisting and fs.existsSync @finalPath
-      return console.log "Will not overwrite: #{@fullPath}"
 
     if @group.argv.preview
-      return @success(true)
+      @success("PREIVEW. Did not move")
+      @handleSubs()
+      return
+
+    if not @config.replaceExisting and fs.existsSync @finalPath
+      @success("SKIPPED. File exists at destination. Cancelled move")
+      return
 
     #create missing dirs
     mkdirp.sync dir
@@ -101,17 +105,35 @@ module.exports = class SortFile
     #dooo eeettttt
     fs.rename @fullPath, @finalPath, (err) =>
       return console.log "Error moving: #{@fullPath}".red if err
-      @success()
+      @success("Successfull moved")
+      @handleSubs
+
+
+  handleSubs: ->
+    #handle subtitle file
+    subsFrom = @subtitlePath(@fullPath)
+    subsTo = @subtitlePath(@finalPath)
+
+    if fs.existsSync subsFrom
+      if @group.argv.preview
+        @displayMessage subsFrom, subsTo, "PREIVEW. Did not move subtitles"
+        return
+
+      fs.rename subsFrom, subsTo, (err) =>
+        @displayMessage(subsFrom, subsTo, "Successfull moved")
+
+  subtitlePath: (full) ->
+   full.replace new RegExp("\\.#{@data.ext}$"),".srt"
 
   cleanPath: (full) ->
     rela = path.relative pwd, full
     (if /^(..\/){2,}/.test(rela) then full else ".#{path.sep}#{rela}").green
 
-  success: (preview) ->
-    console.log "#{if preview then 'Preview ' else ''}Move:\n  " +
-      @cleanPath(@fullPath.toString()) + " to \n  " +
-      @cleanPath(@finalPath.toString())
+  displayMessage: (from, to, str) ->
+    console.log "#{str}:\n  #{@cleanPath from.toString()} to \n  #{@cleanPath to.toString()}"
 
+  success: (str) ->
+    @displayMessage @fullPath, @finalPath, str
     @done() if @done
 
 
