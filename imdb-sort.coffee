@@ -1,12 +1,12 @@
 
+global.home = process.env.HOME or process.env.HOMEPATH or process.env.USERPROFILE
+global.pwd = process.cwd()
+
 require "colors"
 path = require 'path'
 program = require 'optimist'
 SortGroup = require './sort/group'
 SortConfig = require './sort/config'
-
-global.home = process.env.HOME or process.env.HOMEPATH or process.env.USERPROFILE
-global.pwd = process.cwd()
 
 # CLI
 program = program.

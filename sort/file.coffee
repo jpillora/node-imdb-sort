@@ -23,7 +23,7 @@ module.exports = class SortFile
     @extract {title:1,year:2}, /(.*)\b(19\d\d|20\d\d)\b/
     @extract {quality:1}, /(720|1080)p/
     @extract {encoding:1}, /(x264|divx|xvid)/i
-    @extract {title:1,season:3,episode:5}, /(.*)\b(S|Season\s*)(\d+)\s*(E|Episode\s*)(\d+)/i
+    @extract {title:1,season:3,episode:5}, /(.*)\b(S|Season)[\.-]?\s*(\d+)\s*(E|Episode)[\.-]?\s*(\d+)/i
     unless @data.season and @data.episode
       @extract {title:1,season:2,episode:3}, /(.*)\b(\d{1})(\d{2})\b/
     unless @data.title
@@ -79,8 +79,6 @@ module.exports = class SortFile
 
       if typeConfig.directoryPerSeason
         dir = path.join dir, @template typeConfig.seasonName, @result
-
-    console.log @result
 
     fileName = @template typeConfig.fileName, @result
 

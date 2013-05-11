@@ -1,5 +1,5 @@
 
-request = require "request"
+request = require "superagent"
 google = require "google"
 google.resultsPerPage = 1
 
@@ -32,9 +32,12 @@ module.exports =
         return
       id = m[1]
       console.log "Retrieving IMDB item '#{id}'...".grey
-      request.get "http://www.omdbapi.com/?i=#{id}", (err, res) =>
+      request.get "http://www.omdbapi.com/?i=#{id}", (res) =>
+
+        err = res.text if res.status isnt 200
+
         try
-          result = JSON.parse res.body
+          result = JSON.parse res.text
         catch e
           err = e unless err
 
