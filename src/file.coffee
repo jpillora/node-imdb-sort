@@ -4,19 +4,20 @@ mkdirp = require "mkdirp"
 fs = require "fs"
 path = require "path"
 SortSearch = require "./search"
-exts = ["mp4","m4v","mkv","avi"]
+
 
 #sorter class
 module.exports = class SortFile
 
   constructor: (p, @group) ->
+    # console.log "NEW FILE #{p}".yellow
     @fullPath = p
     @config = @group.config
     @orig = @file = path.basename @fullPath
     @data = {}
     #extract important data, remove rubbish
     @extract {ext:1}, /\.(\w+)$/
-    return unless @data.ext in exts
+    return unless @data.ext in @config.fileExtensions
     @extract null, /\ -/g
     @extract null, /[^A-Za-z0-9]/g, 0, ' '
     @extract null, /\b(hdtv|brrip|dvdrip|dvdscr|bluray|ac3|subs)\b/gi
@@ -41,10 +42,10 @@ module.exports = class SortFile
     @data.title = @data.title.replace /(^\s+|\s+$)/g,''
     @ready = true
 
-  run: ->
+  run: (@done) ->
     return unless @ready
     SortSearch.search @data.title, @preference, (err, result) =>
-      throw err if err
+      throw err if err or not result
       @result = _.clone result
       @move()
 
@@ -107,6 +108,7 @@ module.exports = class SortFile
       @cleanPath(@fullPath.toString()) + " to \n  " +
       @cleanPath(@finalPath.toString())
 
+    @done() if @done
 
 
 

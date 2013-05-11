@@ -8,13 +8,12 @@ loading = {}
 
 module.exports =
 
-
   search: (title, pref, done) ->
 
     key = "#{title} #{pref}".toLowerCase()
 
     if cache[key]
-      done null, cache[title]
+      done null, cache[key]
 
     if loading[key]
       loading[key].push done

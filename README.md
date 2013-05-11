@@ -28,58 +28,45 @@ Options:
   -s, --setup      Setup wizard to create or edit the default config  [default: false]
 ```
 
+*Note: If you specific `-r` without a depth - `3` will be used.
+
 ### Configuration
 
-`config.json`
+Here is my generated `config.json` using default settings
 
 ``` json
 {
   "replaceExisting": false,
-  "tvshows" : {
+  "tvshows": {
+    "root": "/Volumes/jpillora/Movies/TV Shows",
     "fileName": "{{ Title }} - Season {{ Season }} Episode {{ Episode }}",
-    "root": "./TV Shows/",
     "directoryPerShow": true,
     "showName": "{{ Title }}",
     "directoryPerSeason": false,
     "seasonName": "Season {{ Season }}"
   },
   "movies": {
-    "fileName": "{{ Title }} ({{ Year }})",
-    "root": "./Movies/"
+    "root": "/Volumes/jpillora/Movies/Movies",
+    "fileName": "{{ Title }} ({{ Year }})"
   }
 }
 ```
 
-# Naming Files and Directories
+### Naming Files and Directories
 
 Inside your configuration, `fileName`, `showName` and `seasonName` can be used to customise your naming styles.
 
-Usable template keys are:
-``` json
-{
-  Title: 'Lost',
-  Year: '2004',
-  Rated: 'TV-14',
-  Released: '22 Sep 2004',
-  Runtime: '42 min',
-  Genre: 'Adventure, Drama, Fantasy, Mystery, Sci-Fi, Thriller',
-  Director: 'N/A',
-  Writer: 'J.J. Abrams, Jeffrey Lieber',
-  Actors: 'Jorge Garcia, Naveen Andrews, Matthew Fox, Josh Holloway',
-  Plot: 'The survivors of a plane crash are forced to live with each other on a remote island, a dangerous new world that poses unique threats of its own.',
-  Poster: 'http://ia.media-imdb.com/images/M/MV5BMjA3NzMyMzU1MV5BMl5BanBnXkFtZTcwNjc1ODUwMg@@._V1_SX300.jpg',
-  imdbRating: '8.3',
-  imdbVotes: '141,852',
-  imdbID: 'tt0411008',
-  Type: 'series',
-  Season: 1,
-  Episode: 5
-}
-```
+Usable template keys are: `Title`,`Year`,`Season`,`Episode`,`Rated`,`Released`,`Runtime`,`Genre`,`Director`,`Writer`,`Actors`,`Plot`,`Poster`,`imdbRating`,`imdbVotes`,`imdbID`,`Type`
 
-# Contributing
+### Todo
+
+* Modify metadata
+* Episode names
+
+### Contributing
 
 The source is CoffeeScript
 * Get deps with `npm install`
 * Compile with `npm start`
 * For testing, make a symbolic link with `ln -s ./bin/imdb-sort [a-folder-in-your-PATH]`
+

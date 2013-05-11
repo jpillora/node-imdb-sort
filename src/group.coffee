@@ -1,5 +1,4 @@
 
-
 fs = require "fs"
 path = require "path"
 SortFile = require "./file"
@@ -8,17 +7,19 @@ SortFile = require "./file"
 module.exports = class SortGroup
 
   constructor: (@argv, @config) ->
-    @paths = []
+    @files = []
+    @watching = false
+    @filesSorted = 0
 
   run: ->
     @scanDir @argv.directory
 
   scanDir: (dir, depth = @argv.r) ->
     return if depth is 0
-    files = fs.readdirSync dir
-    throw "Read dir: #{dir} failed" unless files
+    dirfiles = fs.readdirSync dir
+    throw "Read dir: #{dir} failed" unless dirfiles
 
-    for f in files
+    for f in dirfiles
       continue if /^\./.test f
       p = path.join dir,f
       stats = fs.statSync p
@@ -26,15 +27,36 @@ module.exports = class SortGroup
       if stats.isDirectory()
         @scanDir p, depth-1
       else
-        @paths.push p
+        file = new SortFile p, @
+        @files.push file if file.ready
 
     @sortFiles()
 
   sortFiles: ->
-    @paths.sort()
+    console.log "Found #{@files.length} video files.".grey
 
-    for p in @paths
+    if @files.length is 0
+      return @watch()
+
+    console.log "Sorting now...".yellow
+    for f in @files
+      f.run => @filedSorted()
+
+  filedSorted: ->
+    @filesSorted++
+    @watch()
+
+  watch: ->
+    # console.log @argv.w , @watching , @filesSorted , @files.length
+    return if not @argv.w or @watching or @filesSorted isnt @files.length
+    @watching = true
+
+    console.log "Watching '#{@argv.directory}' for changes...".grey
+    fs.watch @argv.directory, {persistant:true}, (event, p) =>
+      return if event is 'change'
+      return unless fs.existsSync p
       f = new SortFile p, @
-      f.run()
+      f.run() if f.ready
 
+      
 

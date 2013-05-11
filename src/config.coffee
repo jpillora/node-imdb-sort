@@ -2,6 +2,7 @@
 _ = require "lodash"
 fs = require "fs"
 path = require "path"
+mkdirp = require "mkdirp"
 strip = require("colors").stripColors
 prompt = require "prompt"
 prompt.message = "imdb-sort".yellow
@@ -36,14 +37,18 @@ defaultSchema =
     description: "Replace existing files"
     default: false
     validator: 'bool'
+  fileExtensions:
+    description: "List organisable file types (comma separated)"
+    default: "mp4,m4v,mkv,avi"
+    before: (str) -> strip(str).replace(/\s/g,'').split ','
   tvshows:
+    root:
+      description: "The root directory for your TV shows"
+      default: path.join defaultVideoDir, "TV Shows"
     fileName:
       description: "File name format for your TV show episodes"
       default: "{{ Title }} - Season {{ Season }} Episode {{ Episode }}"
       validator: 'template'
-    root:
-      description: "The root directory for your TV shows"
-      default: path.join defaultVideoDir, "TV Shows"
     directoryPerShow:
       description: "Create a directory per TV show"
       default: true
@@ -60,13 +65,13 @@ defaultSchema =
       description: "Folder name format for your TV show seasons"
       default: "Season {{ Season }}"
   movies:
+    root:
+      description: "The root directory for your movies"
+      default: path.join defaultVideoDir, "Movies"
     fileName:
       description: "Filename format for your movies"
       default: "{{ Title }} ({{ Year }})"
       validator: 'template'
-    root:
-      description: "The root directory for your movies"
-      default: path.join defaultVideoDir, "Movies"
 
 module.exports =
   load: (@argv, @done) ->
@@ -81,10 +86,9 @@ module.exports =
   #custom merge - merges a config into the schema
   merge: (x,y) ->
     _.merge x, y, (a,b) =>
-      if _.isPlainObject(a) and _.isPlainObject(b)
-        return @merge(a,b)
-      if _.isPlainObject(a) and a.description and _.isString(b)
-        a.default = b
+      return a unless _.isPlainObject(a)
+      return @merge(a,b) if _.isPlainObject(b)
+      a.default = b
       return a
 
   #flatten schema for prompt
@@ -146,9 +150,6 @@ module.exports =
   write: ->
       
     configStr = JSON.stringify @config, null, 2
-
-    console.log "WRITE", configStr
-    return
     
     mkdirp.sync path.dirname @path
 
