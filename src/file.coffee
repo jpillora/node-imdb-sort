@@ -28,7 +28,7 @@ module.exports = class SortFile
     @extract {encoding:1}, /(x264|divx|xvid)/i
     @extract {title:1,season:3,episode:5}, /(.*)\b(S|Season)[\.-]?\s*(\d+)\s*(E|Episode)[\.-]?\s*(\d+)/i
     unless @data.season and @data.episode
-      @extract {title:1,season:2,episode:3}, /(.*)\b(\d{1})(\d{2})\b/
+      @extract {title:1,season:2,episode:3}, /(.*)\b(\d{1,2})x?(\d{2})\b/
     unless @data.title
       @extract {title:0}, /([A-Za-z0-9]+\ ?)+[A-Za-z0-9]+/
     #start search

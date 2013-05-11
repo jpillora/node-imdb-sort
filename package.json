@@ -3,11 +3,11 @@
   "bin": {
     "imdb-sort": "./bin/imdb-sort"
   },
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Sort videos files using an IMDB API lookup",
   "main": "./out/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "./bin/imdb-sort -d example/files/ -p",
     "start": "./node_modules/coffee-script/bin/coffee -w -o out/ src/"
   },
   "repository": {

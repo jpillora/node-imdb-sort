@@ -16,16 +16,16 @@ Sort files based on IMDB data
 ### Help Output
 
 ```
-Organises Movies and TV Shows using IMDB v0.0.4
+Organises Movies and TV Shows using IMDB
 Usage: imdb-sort [options]
 
 Options:
   -c, --config     Path to 'imdb-sort.json' configuration file        [default: "/Volumes/jpillora/.imdb-sort/config.json"]
   -d, --directory  The directory to scan                              [default: "/Volumes/jpillora/Code/Node/node-imdb-sort"]
   -r, --recursive  Recursive depth (default: current directory)       [default: 1]
-  -w, --watch      Watch directory for changes
+  -w, --watch      Watch directory for changes                        
   -p, --preview    Dry run only (will not move any files)
-  -s, --setup      Setup wizard to create or edit the default config
+  -s, --setup      Setup wizard to create or edit the config
 ```
 
 *Note: If you specific `-r` without a depth; `3` will be used.
@@ -60,7 +60,8 @@ Usable template keys are: `Title`,`Year`,`Season`,`Episode`,`Rated`,`Released`,`
 
 ### Known Issues
 
-It is possible to get temporarily blocked by Google for sending too many requests.
+* It is possible to get temporarily blocked by Google for sending too many requests.
+* `imdb-sort` decides if a file is TV series or Movie depending on whether it can find season and episode numbers. Please post an issue if a TV series file is found to be a movie. 
 
 ### Todo
 
