@@ -13,9 +13,9 @@ fileNameRegex = new RegExp "[#{fileNameBlacklist.map((s)->"\\#{s}").join('')}]"
 module.exports = class SortFile
 
   constructor: (p, @group) ->
-    # console.log "NEW FILE #{p}".yellow
     @srcPath = p
     { @config, @argv } = @group
+    console.log "NEW FILE #{p}".yellow if @argv.debug
     @orig = @file = path.basename @srcPath
     @data = {}
     #extract important data, remove rubbish
@@ -34,8 +34,6 @@ module.exports = class SortFile
       @extract {title:1,season:2,episode:3}, /(.*)\b(\d{1,2}).?(\d{2})\b/
     unless @data.title
       @extract {title:0}, /([A-Za-z0-9]+\ ?)+[A-Za-z0-9]+/
-    #start search
-    @found = null
     #series if has season and episode
     if @data.season and @data.episode
       @preference = 'series'
@@ -52,14 +50,12 @@ module.exports = class SortFile
 
     if @argv.debug
       console.log "RUN FILE: #{@srcPath}\n with data: #{JSON.stringify @data, null, 2}\n".yellow
-      return
 
     SortSearch.search @data.title, @preference, (err, result) =>
       if err
         console.log "Search error: #{err}".red
         @done()
-        return 
-
+        return
       @result = _.clone result
       @move()
 
@@ -135,7 +131,7 @@ module.exports = class SortFile
 
   cleanPath: (full) ->
     rela = path.relative pwd, full.toString()
-    (if new RegExp("^..\\#{path.sep}{2,").test(rela) then full else ".#{path.sep}#{rela}").green
+    (if new RegExp("(\\.\\.\\#{path.sep}){2,}").test(rela) then full else ".#{path.sep}#{rela}").green
 
   displayMessage: (src, dest, str) ->
     console.log "#{str}:\n  #{@cleanPath src} to \n  #{@cleanPath dest}"

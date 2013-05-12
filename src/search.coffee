@@ -37,9 +37,7 @@ module.exports =
       return done "No results for '#{key}'" if links.length is 0
       l = links[0].link
       m = l.match /^http:\/\/www\.imdb\.com\/.*\/(tt\d+)\//
-      unless m
-        console.log "Could not find '#{title}' on IMDB".grey
-        return
+      return done "Could not find '#{title}' on IMDB" unless m
       id = m[1]
       console.log "Retrieving IMDB item '#{id}'...".grey
       request "http://www.omdbapi.com/?i=#{id}", (res) =>

@@ -9,8 +9,8 @@ prompt.message = "imdb-sort".yellow
 prompt.colors = false
 
 #allowed template keys
-keys = ['Title','Year','Rated','Released','Runtime','Genre','Director','Writer',
-        'Actors','Plot','Poster','imdbRating','imdbVotes','imdbID','Type','Season','Episode']
+keys = ['Title','Year','Rated','Released','Runtime','Genre','Director','Writer','Actors',
+        'Plot','Poster','imdbRating','imdbVotes','imdbID','Type','Season','Episode']
 
 videoDirName = if fs.existsSync(path.join(home,'Movies')) then 'Movies' else 'Videos'
 defaultVideoDir = path.join home, videoDirName
@@ -101,9 +101,7 @@ module.exports =
         if _.isPlainObject(v) and not v.description and not v.default
           visit v, k
         else
-          if v.validator and (vObj = validators[v.validator])
-            delete v.validator
-            _.extend v, vObj
+          _.extend v, vObj if v.validator and (vObj = validators[v.validator])
           # v.description += "\nenter to use"
           v.default = "#{v.default}".cyan
 
@@ -152,7 +150,7 @@ module.exports =
   write: ->
     console.log "Writing config '#{@path}'".grey
     configStr = JSON.stringify @config, null, 2
-    
+
     mkdirp.sync path.dirname @path
 
     fs.writeFile @path, configStr, (err) =>
@@ -162,7 +160,7 @@ module.exports =
   read: ->
     fs.readFile @path, (err, contents) =>
       if err or not contents
-        return @done "Cannot read: #{@path}"
+        return @done "Cannot read: #{err or @path}"
 
       try
         @config = JSON.parse contents

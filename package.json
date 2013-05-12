@@ -24,7 +24,10 @@
     "optimist": "~0.4.0",
     "prompt": "~0.2.9"
   },
-  "devDependancies": {
+  "devDependencies": {
     "coffee-script": "~1.6.2"
+  },
+  "engines": {
+    "node": ">=0.10.0"
   }
 }
