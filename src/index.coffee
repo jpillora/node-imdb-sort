@@ -1,9 +1,11 @@
 
+path = require 'path'
+
 global.home = process.env.USERPROFILE or process.env.HOME or process.env.HOMEPATH
+global.defaultConfig = path.join home, '.imdb-sort', 'config.json'
 global.pwd = process.cwd()
 
 require "colors"
-path = require 'path'
 program = require 'optimist'
 SortGroup = require './group'
 SortConfig = require './config'
@@ -11,12 +13,13 @@ pkg = require "../package.json"
 
 # CLI
 program = program.
-  usage("""Organises Movies and TV Shows using IMDB v#{pkg.version}
+  usage("""#{'IMDb Sort'.yellow} - v#{pkg.version}
+           Organises Movies and TV Shows using IMDB
            Usage: imdb-sort [options]""").
   options('c',
     'alias'    : 'config'
-    'describe' : 'Path to \'imdb-sort.json\' configuration file'
-    'default'  : path.join home, '.imdb-sort', 'config.json'
+    'describe' : 'Path to \'' + 'imdb-sort' + '.json\' configuration file'
+    'default'  : defaultConfig
   ).
   options('d',
     'alias'    : 'directory'
@@ -53,12 +56,15 @@ program = program.
   options('z',
     'alias'    : 'debug'
     'describe' : 'Debug mode'
-    'default'  : false
   )
 
 argv = program.argv
-if argv.h or argv.help or argv.v or argv.version
-  return program.showHelp(console.error)
+if argv.h or argv.help or
+   argv.v or argv.version or
+   argv._?.length
+  program.showHelp(console.error)
+  console.log "Did you mean '-d #{argv._[0]}' ?".yellow if argv._?.length
+  return 
 
 #calculate arguments
 argv.d = argv.directory = path.resolve(argv.d)
@@ -70,6 +76,7 @@ try
 catch e
   return console.log "Invalid regex filter: #{e}".red
 
+console.log "ARGS: #{JSON.stringify argv,null,2}" if argv.z
 console.log "PREVIEW MODE".yellow if argv.p
 
 #load config then run

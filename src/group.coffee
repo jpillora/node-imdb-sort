@@ -21,6 +21,8 @@ module.exports = class SortGroup
     unless dirfiles
       console.log "Read dir failed on '#{dir}'".red
 
+    console.log "Scanning #{dirfiles.length} files in '#{dir}'..." 
+
     for f in dirfiles
       continue if /^\./.test f
       p = path.join dir,f

@@ -1,5 +1,6 @@
 
 _ = require "lodash"
+strip = require("colors").stripColors
 mkdirp = require "mkdirp"
 fs = require "fs"
 path = require "path"
@@ -13,15 +14,15 @@ module.exports = class SortFile
 
   constructor: (p, @group) ->
     # console.log "NEW FILE #{p}".yellow
-    @fullPath = p
+    @srcPath = p
     { @config, @argv } = @group
-    @orig = @file = path.basename @fullPath
+    @orig = @file = path.basename @srcPath
     @data = {}
     #extract important data, remove rubbish
     @extract {ext:1}, /\.(\w+)$/
     return unless @data.ext in @config.fileExtensions
-    return if @argv.f and not @argv.f.test @fullPath
-    return if @argv.i and @argv.i.test @fullPath
+    return if @argv.f and not @argv.f.test @srcPath
+    return if @argv.i and @argv.i.test @srcPath
     @extract null, /\ -/g
     @extract null, /[^A-Za-z0-9]/g, 0, ' '
     @extract null, /\b(hdtv|brrip|dvdrip|dvdscr|bluray|ac3|subs)\b/gi
@@ -50,7 +51,7 @@ module.exports = class SortFile
     return unless @ready
 
     if @argv.debug
-      console.log "RUN FILE: #{@fullPath}\n with data: #{JSON.stringify @data, null, 2}\n".yellow
+      console.log "RUN FILE: #{@srcPath}\n with data: #{JSON.stringify @data, null, 2}\n".yellow
       return
 
     SortSearch.search @data.title, @preference, (err, result) =>
@@ -98,53 +99,49 @@ module.exports = class SortFile
     #delete disallowed filename chars
     fileName = fileName.replace fileNameRegex, ''
 
-    @finalPath = "#{path.join(dir, fileName)}.#{@data.ext}"
-
+    @destPath = "#{path.join(dir, fileName)}.#{@data.ext}"
 
     if @argv.preview
       @success("PREIVEW. Did not move")
       @handleSubs()
       return
 
-    if not @config.replaceExisting and fs.existsSync @finalPath
+    if not @config.replaceExisting and fs.existsSync @destPath
       @success("SKIPPED. File exists at destination. Cancelled move")
       return
 
     #create missing dirs
-    mkdirp.sync dir
-
-    #dooo eeettttt
-    fs.rename @fullPath, @finalPath, (err) =>
-      return console.log "Error moving: #{@fullPath}".red if err
-      @success("Successfull moved")
-      @handleSubs
-
+    mkdirp dir, =>
+      #dooo eeettttt
+      fs.rename @srcPath, @destPath, (err) =>
+        return console.log "Error moving: #{err}".red if err
+        @success("Successfull moved")
+        @handleSubs()
 
   handleSubs: ->
     #handle subtitle file
-    subsFrom = @subtitlePath(@fullPath)
-    subsTo = @subtitlePath(@finalPath)
+    subsSrc = strip @subtitlePath(@srcPath)
+    subsDest = strip @subtitlePath(@destPath)
 
-    if fs.existsSync subsFrom
-      if @argv.preview
-        @displayMessage subsFrom, subsTo, "PREIVEW. Did not move subtitles"
-        return
+    return unless subsSrc and fs.existsSync subsSrc
+    return @displayMessage subsSrc, subsDest, "PREIVEW. Did not move (subs)" if @argv.preview
 
-      fs.rename subsFrom, subsTo, (err) =>
-        @displayMessage(subsFrom, subsTo, "Successfull moved")
+    fs.rename subsSrc, subsDest, (err) =>
+      return console.log "Error moving: #{err}".red if err
+      @displayMessage(subsSrc, subsDest, "Successfull moved")
 
   subtitlePath: (full) ->
    full.replace new RegExp("\\.#{@data.ext}$"),".srt"
 
   cleanPath: (full) ->
-    rela = path.relative pwd, full
-    (if /^(..\/){2,}/.test(rela) then full else ".#{path.sep}#{rela}").green
+    rela = path.relative pwd, full.toString()
+    (if new RegExp("^..\\#{path.sep}{2,").test(rela) then full else ".#{path.sep}#{rela}").green
 
-  displayMessage: (from, to, str) ->
-    console.log "#{str}:\n  #{@cleanPath from.toString()} to \n  #{@cleanPath to.toString()}"
+  displayMessage: (src, dest, str) ->
+    console.log "#{str}:\n  #{@cleanPath src} to \n  #{@cleanPath dest}"
 
   success: (str) ->
-    @displayMessage @fullPath, @finalPath, str
+    @displayMessage @srcPath, @destPath, str
     @done() if @done
 
 

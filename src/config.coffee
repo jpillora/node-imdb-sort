@@ -130,20 +130,22 @@ module.exports =
   gen: ->
 
     console.log """
-      Welcome to #{'IMDb Sort'.yellow}. Your default configuration file will now be generated and saved at this location:
+      Welcome to #{'IMDb Sort'.yellow}. Your#{if defaultConfig is @path then ' default' else ''} configuration file will now be generated and saved at this location:
         "#{@path.yellow}"
       Please follow the prompts below.
       To use an alternative configuration, use the -c option.
 
       Note:
-        * Default values are in the brackets "( #{'...'.cyan} )"
+        * Skip the question to use the default value in the brackets "( #{'...'.cyan} )"
         * Placeholder strings are denoted by the double curlys "{{ ... }}"
         * Paths starting with "~#{path.sep}" will get converted to "#{home}#{path.sep}"
+        * Using relative paths ".#{path.sep}" for directores will always be relative to the current working directory
 
     """
 
     prompt.start()
     prompt.get @schemafy(@config), (err, result) =>
+      return @done err if err
       @config = @objectify result
       @write()
 
