@@ -77,7 +77,7 @@ module.exports = class SortFile
     unless mov or tv
       return console.log "Unknown type: #{@result.Type}".red
 
-    typeConfig = @config[if mov then 'movies' else 'tvshows']
+    typeConfig = @config[if mov then 'movies' else 'tvShows']
 
     dir = path.resolve typeConfig.root.replace /^~/, home
 
@@ -138,7 +138,7 @@ module.exports = class SortFile
 
   success: (str) ->
     @displayMessage @srcPath, @destPath, str
-    @done() if @done
+    @done()
 
 
 

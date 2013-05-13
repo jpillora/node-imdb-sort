@@ -22,7 +22,8 @@
     "mkdirp": "~0.3.5",
     "lodash": "~1.2.1",
     "optimist": "~0.4.0",
-    "prompt": "~0.2.9"
+    "prompt": "~0.2.9",
+    "watch": "~0.7.0"
   },
   "devDependencies": {
     "coffee-script": "~1.6.2"

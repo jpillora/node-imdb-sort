@@ -53,8 +53,7 @@ program = program.
     'alias'    : 'setup'
     'describe' : 'Setup wizard to create or edit the default config'
   ).
-  options('z',
-    'alias'    : 'debug'
+  options('debug',
     'describe' : 'Debug mode'
   )
 
@@ -64,7 +63,7 @@ if argv.h or argv.help or
    argv._?.length
   program.showHelp(console.error)
   console.log "Did you mean '-d #{argv._[0]}' ?".yellow if argv._?.length
-  return 
+  return
 
 #calculate arguments
 argv.d = argv.directory = path.resolve(argv.d)
@@ -76,7 +75,7 @@ try
 catch e
   return console.log "Invalid regex filter: #{e}".red
 
-console.log "ARGS: #{JSON.stringify argv,null,2}" if argv.z
+console.log "ARGS: #{JSON.stringify argv,null,2}" if argv.debug
 console.log "PREVIEW MODE".yellow if argv.p
 
 #load config then run

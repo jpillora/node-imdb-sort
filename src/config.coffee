@@ -17,8 +17,8 @@ defaultVideoDir = path.join home, videoDirName
 
 validators =
   bool:
-    conform: (str) -> /^(true|false)$/.test strip str
-    message: "Must be 'true' or 'false'"
+    conform: (str) -> s = strip str; s is 'true' or s is 'false'
+    message: "must be 'true' or 'false'"
     before: (str) -> strip(str) is 'true'
   template:
     conform: (str) ->
@@ -41,7 +41,7 @@ defaultSchema =
     description: "List organisable file types (comma separated)"
     default: "mp4,m4v,mkv,avi"
     before: (str) -> strip(str).replace(/\s/g,'').split ','
-  tvshows:
+  tvShows:
     root:
       description: "The root directory for your TV shows"
       default: path.join defaultVideoDir, "TV Shows"
@@ -86,6 +86,7 @@ module.exports =
   #custom merge - merges a config into the schema
   merge: (x,y) ->
     _.merge x, y, (a,b) =>
+      return {} unless a
       return a unless _.isPlainObject(a)
       return @merge(a,b) if _.isPlainObject(b)
       a.default = b
@@ -101,7 +102,9 @@ module.exports =
         if _.isPlainObject(v) and not v.description and not v.default
           visit v, k
         else
-          _.extend v, vObj if v.validator and (vObj = validators[v.validator])
+          if v.validator and (vObj = validators[v.validator])
+            delete v.validator
+            _.extend v, vObj
           # v.description += "\nenter to use"
           v.default = "#{v.default}".cyan
 
@@ -140,9 +143,9 @@ module.exports =
         * Using relative paths ".#{path.sep}" for directores will always be relative to the current working directory
 
     """
-
+    sch = @schemafy(@config)
     prompt.start()
-    prompt.get @schemafy(@config), (err, result) =>
+    prompt.get sch, (err, result) =>
       return @done err if err
       @config = @objectify result
       @write()
@@ -167,8 +170,12 @@ module.exports =
       catch e
         return @done e
 
+      #age check - v0.0.9 deploy date
+      stats = fs.statSync @path
+      isCurrent = stats?.mtime?.getTime() > 1368406009173
+
       #ready
-      if @argv.setup
+      if @argv.setup or not isCurrent
         console.log "Editing config '#{@path}'".grey
         @gen @config
       else
