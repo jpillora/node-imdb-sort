@@ -8,13 +8,13 @@ request = (url, done) ->
     res.on 'end', -> res.body = str; done res
   ).end()
 
+#https://logs-01.loggly.com/inputs/35bbdd2e-20e9-4537-b401-f00c0a7779e6/tag/imdb-sort/
+
 google = require "google"
 google.resultsPerPage = 1
 
 cache = {}
 loading = {}
-
-
 
 module.exports =
 
@@ -36,9 +36,9 @@ module.exports =
       return done err if err
       return done "No results for '#{key}'" if links.length is 0
       l = links[0].link
-      m = l.match /^http:\/\/www\.imdb\.com\/.*\/(tt\d+)\//
-      return done "Could not find '#{title}' on IMDB" unless m
-      id = m[1]
+      unless /^http:\/\/www\.imdb\.com\/.*\/(tt\d+)\//.test l
+        return done "Could not find '#{title}' on IMDB"
+      id = RegExp.$1
       console.log "Retrieving IMDB item '#{id}'...".grey
       request "http://www.omdbapi.com/?i=#{id}", (res) =>
 
@@ -55,8 +55,7 @@ module.exports =
         unless err
           cache[key] = result
 
-        for done in loading[key]
+        while loading[key].length
+          done = loading[key].pop()
           done err, result
-
-
 

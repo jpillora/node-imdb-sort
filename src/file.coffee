@@ -7,7 +7,7 @@ path = require "path"
 SortSearch = require "./search"
 
 fileNameBlacklist = ['/','\'','?','%','*',':','|','"','<','>','.']
-fileNameRegex = new RegExp "[#{fileNameBlacklist.map((s)->"\\#{s}").join('')}]"
+fileNameRegex = new RegExp "[#{fileNameBlacklist.map((s)->"\\#{s}").join('')}]","g"
 
 #sorter class
 module.exports = class SortFile
@@ -71,19 +71,15 @@ module.exports = class SortFile
     str.replace /{{\s*(\w+)\s*}}/g, (s,key) -> obj[key]
 
   move: ->
-    mov = @result.Type is 'movie'
-    tv = @result.Type is 'series'
-
-    unless mov or tv
-      return console.log "Unknown type: #{@result.Type}".red
+    mov = @preference is 'movie'
 
     typeConfig = @config[if mov then 'movies' else 'tvShows']
 
     dir = path.resolve typeConfig.root.replace /^~/, home
 
-    if tv
-      @result.Season = @data.season
-      @result.Episode = @data.episode
+    if not mov
+      @result.Season =  (if @data.season  < 10 then "0" else "") + @data.season
+      @result.Episode = (if @data.episode < 10 then "0" else "") + @data.episode
 
       if typeConfig.directoryPerShow
         dir = path.join dir, @template typeConfig.showName, @result

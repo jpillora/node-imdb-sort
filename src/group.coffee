@@ -54,8 +54,8 @@ module.exports = class SortGroup
 
     if @files.length is 0
       return @sortComplete()
-
-    console.log "Sorting now...".yellow
+    else
+      console.log "Sorting now...".yellow
 
     #async, 5 concurrent
     for f in @files
@@ -85,12 +85,12 @@ module.exports = class SortGroup
 
         srcDir = path.dirname srcPath
         relaDir = path.relative(srcDir, @argv.directory) + path.sep
-        relaMatch = new RegExp "\.\.\\#{path.sep}{#{@argv.r-1},}"
+        relaMatch = new RegExp "\.\.\\#{path.sep}{#{@argv.r-1},}" #../{2,} only allows 'r' many
 
         # console.log "RELA MATCH #{relaMatch} (#{tooDeep}) DIR #{relaDir} ".cyan
         return if relaMatch.test relaDir
 
-        console.log "WATCH EVENT #{stat}, #{srcPath}".yellow if @argv.debug
+        console.log "WATCH EVENT #{srcPath}: #{stat}".yellow if @argv.debug
         # return if event is 'change'
         # srcPath = path.join @argv.directory, p
         unless fs.existsSync srcPath

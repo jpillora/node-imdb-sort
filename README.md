@@ -34,7 +34,7 @@ Options:
   --debug               Debug mode
 ```
 
-*Note: If you specific `-r` without a depth; `3` will be used.
+*Note: If you specify `-r` without a depth; `3` will be used.
 
 ### Configuration
 
