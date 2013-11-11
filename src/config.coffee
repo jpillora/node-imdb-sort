@@ -170,9 +170,12 @@ module.exports =
       catch e
         return @done e
 
-      #age check - v0.0.9 deploy date
+      #age check - v0.1.1 deploy date
       stats = fs.statSync @path
-      isCurrent = stats?.mtime?.getTime() > 1368406009173
+      isCurrent = stats?.mtime?.getTime() > new Date("11 November 2013").getTime()
+
+      unless isCurrent
+        console.log "Configuration update required"
 
       #ready
       if @argv.setup or not isCurrent
@@ -181,3 +184,6 @@ module.exports =
       else
         console.log "Using config '#{@path}'".grey
         @done null, @config
+
+
+

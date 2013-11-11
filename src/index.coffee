@@ -75,7 +75,7 @@ try
 catch e
   return console.log "Invalid regex filter: #{e}".red
 
-console.log "ARGS: #{JSON.stringify argv,null,2}" if argv.debug
+console.log "DEBUG MODE - ARGS: #{JSON.stringify argv,null,2}" if argv.debug
 console.log "PREVIEW MODE".yellow if argv.p
 
 #load config then run

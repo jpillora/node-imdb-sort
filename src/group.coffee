@@ -3,7 +3,7 @@ fs = require "fs"
 path = require "path"
 SortFile = require "./file"
 util = require "util"
-watch = require "watch"
+gaze = require "gaze"
 
 #sorter class
 module.exports = class SortGroup
@@ -76,21 +76,30 @@ module.exports = class SortGroup
 
     processed = {}
 
-    console.log "Watching '#{@argv.directory}' for changes...".grey
+    watchPath = path.join @argv.directory, '**', '*'
 
-    watch.createMonitor @argv.directory, (monitor) =>
-      monitor.on "created", (srcPath, stat) =>
+    console.log "Watching '#{watchPath}' for changes...".grey
+
+    gaze '**/*', (err, watcher) =>
+      if err
+        console.log "Failed to watch '#{watchPath}'".red
+        return
+      watcher.on "all", (type, srcPath) =>
+        return if type not in ["renamed","added"]
+        
+        console.log "WATCH EVENT: #{type} #{srcPath}".yellow if @argv.debug
+
         return if processed[srcPath]
         processed[srcPath] = true
+
 
         srcDir = path.dirname srcPath
         relaDir = path.relative(srcDir, @argv.directory) + path.sep
         relaMatch = new RegExp "\.\.\\#{path.sep}{#{@argv.r-1},}" #../{2,} only allows 'r' many
 
-        # console.log "RELA MATCH #{relaMatch} (#{tooDeep}) DIR #{relaDir} ".cyan
+        console.log "RELA MATCH #{relaMatch} DIR #{relaDir} ".cyan if @argv.debug
         return if relaMatch.test relaDir
 
-        console.log "WATCH EVENT #{srcPath}: #{stat}".yellow if @argv.debug
         # return if event is 'change'
         # srcPath = path.join @argv.directory, p
         unless fs.existsSync srcPath

@@ -6,8 +6,14 @@ fs = require "fs"
 path = require "path"
 SortSearch = require "./search"
 
-fileNameBlacklist = ['/','\'','?','%','*',':','|','"','<','>','.']
-fileNameRegex = new RegExp "[#{fileNameBlacklist.map((s)->"\\#{s}").join('')}]","g"
+
+dirNameBlacklist = ['?','%','*',':','|','"','<','>','.']
+fileNameBlacklist = dirNameBlacklist.concat ['/','\'']
+makeBlacklistRegex = (arr) ->
+  new RegExp "[#{arr.map((s)->"\\#{s}").join('')}]","g"
+
+dirNameRegex = makeBlacklistRegex dirNameBlacklist
+fileNameRegex = makeBlacklistRegex fileNameBlacklist
 
 #sorter class
 module.exports = class SortFile
@@ -70,6 +76,8 @@ module.exports = class SortFile
   template: (str, obj) ->
     str.replace /{{\s*(\w+)\s*}}/g, (s,key) -> obj[key]
 
+
+
   move: ->
     mov = @preference is 'movie'
 
@@ -82,13 +90,16 @@ module.exports = class SortFile
       @result.Episode = (if @data.episode < 10 then "0" else "") + @data.episode
 
       if typeConfig.directoryPerShow
-        dir = path.join dir, @template typeConfig.showName, @result
+        dirName = @template typeConfig.showName, @result
+        dirName = dirName.replace dirNameRegex, ''
+        dir = path.join dir, dirName
 
       if typeConfig.directoryPerSeason
-        dir = path.join dir, @template typeConfig.seasonName, @result
+        dirName = @template typeConfig.seasonName, @result
+        dirName = dirName.replace dirNameRegex, ''
+        dir = path.join dir, dirName
 
     fileName = @template typeConfig.fileName, @result
-    #delete disallowed filename chars
     fileName = fileName.replace fileNameRegex, ''
 
     @destPath = "#{path.join(dir, fileName)}.#{@data.ext}"

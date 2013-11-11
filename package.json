@@ -3,7 +3,7 @@
   "bin": {
     "imdb-sort": "./bin/imdb-sort"
   },
-  "version": "0.1.0",
+  "version": "0.1.3",
   "description": "Sort videos files using an IMDB API lookup",
   "main": "./out/index.js",
   "scripts": {
@@ -23,7 +23,7 @@
     "lodash": "~1.2.1",
     "optimist": "~0.4.0",
     "prompt": "~0.2.9",
-    "watch": "~0.7.0"
+    "gaze": "~0.4.3"
   },
   "devDependencies": {
     "coffee-script": "~1.6.2"
