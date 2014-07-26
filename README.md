@@ -22,7 +22,6 @@ Organises Movies and TV Shows using IMDB
 Usage: imdb-sort [options]
 
 Options:
-Options:
   -c, --config          Path to 'imdb-sort.json' configuration file             [default: "~/.imdb-sort/config.json"]
   -d, --directory       The directory to scan                                   [default: <CURRENT DIR>]
   -r, --recursive       Recursive depth (default: current directory)            [default: 1]

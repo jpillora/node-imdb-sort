@@ -39,7 +39,7 @@ defaultSchema =
     validator: 'bool'
   fileExtensions:
     description: "List organisable file types (comma separated)"
-    default: "mp4,m4v,mkv,avi"
+    default: "mp4,m4v,mkv,avi,ts"
     before: (str) -> strip(str).replace(/\s/g,'').split ','
   tvShows:
     root:
@@ -107,7 +107,6 @@ module.exports =
             _.extend v, vObj
           # v.description += "\nenter to use"
           v.default = "#{v.default}".cyan
-
           key = (if parent then parent+"." else '')+k
           flat[key] = v
     visit obj
@@ -177,7 +176,7 @@ module.exports =
       unless isCurrent
         console.log "Configuration update required"
 
-      #ready
+      #valid
       if @argv.setup or not isCurrent
         console.log "Editing config '#{@path}'".grey
         @gen @config

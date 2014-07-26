@@ -4,7 +4,7 @@ strip = require("colors").stripColors
 mkdirp = require "mkdirp"
 fs = require "fs"
 path = require "path"
-SortSearch = require "./search"
+Search = require "./search"
 
 
 dirNameBlacklist = ['?','%','*',':','|','"','<','>','.']
@@ -16,7 +16,7 @@ dirNameRegex = makeBlacklistRegex dirNameBlacklist
 fileNameRegex = makeBlacklistRegex fileNameBlacklist
 
 #sorter class
-module.exports = class SortFile
+module.exports = class File
 
   constructor: (p, @group) ->
     @srcPath = p
@@ -49,21 +49,22 @@ module.exports = class SortFile
       @preference = 'movie'
 
     @data.title = @data.title.replace /(^\s+|\s+$)/g,''
-    @ready = true
+    @valid = true
 
-  run: (@done) ->
-    return unless @ready
+  run: (@done = ->) ->
+    return unless @valid
 
     if @argv.debug
       console.log "RUN FILE: #{@srcPath}\n with data: #{JSON.stringify @data, null, 2}\n".yellow
 
-    SortSearch.search @data.title, @preference, (err, result) =>
+    Search.search @data.title, @data.year, @preference, (err, result) =>
       if err
         console.log "Search error: #{err}".red
         @done()
         return
       @result = _.clone result
       @move()
+    return
 
   extract: (caps, regex, ri = 0, rs = '') ->
     m = @file.match regex
@@ -75,8 +76,6 @@ module.exports = class SortFile
 
   template: (str, obj) ->
     str.replace /{{\s*(\w+)\s*}}/g, (s,key) -> obj[key]
-
-
 
   move: ->
     mov = @preference is 'movie'
@@ -134,7 +133,7 @@ module.exports = class SortFile
       @displayMessage(subsSrc, subsDest, "Successfull moved")
 
   subtitlePath: (full) ->
-   full.replace new RegExp("\\.#{@data.ext}$"),".srt"
+    full.replace new RegExp("\\.#{@data.ext}$"),".srt"
 
   cleanPath: (full) ->
     rela = path.relative pwd, full.toString()

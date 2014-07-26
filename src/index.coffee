@@ -1,15 +1,38 @@
 
-path = require 'path'
 
+path = require 'path'
 global.home = process.env.USERPROFILE or process.env.HOME or process.env.HOMEPATH
 global.defaultConfig = path.join home, '.imdb-sort', 'config.json'
 global.pwd = process.cwd()
 
 require "colors"
 program = require 'optimist'
-SortGroup = require './group'
-SortConfig = require './config'
+Group = require './group'
+Config = require './config'
 pkg = require "../package.json"
+os = require "os"
+
+
+
+#==== error reporting
+
+winston = require('winston')
+require('winston-papertrail').Papertrail
+logger = null
+id = ["v#{pkg.version}",os.type(),os.platform(),os.arch(),os.release()].join '-'
+
+process.on 'uncaughtException', (err) ->
+  msg = "[#{id}] Uncaught Exception: #{err.stack or err}"
+  unless logger
+    logger = new winston.Logger transports: [
+      new winston.transports.Papertrail
+        hostname: 'imdb-sort'
+        host: 'logs2.papertrailapp.com'
+        port: 32961
+    ]
+  logger.error(msg)
+  console.error msg
+  return
 
 # CLI
 program = program.
@@ -79,9 +102,9 @@ console.log "DEBUG MODE - ARGS: #{JSON.stringify argv,null,2}" if argv.debug
 console.log "PREVIEW MODE".yellow if argv.p
 
 #load config then run
-SortConfig.load argv, (err, config) ->
+Config.load argv, (err, config) ->
   return console.log "Error loading config: #{err}" if err
-  group = new SortGroup argv, config
+  group = new Group argv, config
   group.run()
 
 
