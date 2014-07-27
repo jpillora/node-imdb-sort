@@ -3,12 +3,13 @@
   "bin": {
     "imdb-sort": "./bin/imdb-sort"
   },
-  "version": "0.2.0",
+  "version": "0.2.3",
   "description": "Sort videos files using an IMDB API lookup",
   "main": "./out/index.js",
   "scripts": {
     "test": "./bin/imdb-sort -d example/files/ -p",
-    "start": "./node_modules/coffee-script/bin/coffee -w -o out/ src/"
+    "start": "./node_modules/coffee-script/bin/coffee -w -o out/ src/",
+    "prepublish": "./node_modules/coffee-script/bin/coffee -o out/ src/"
   },
   "repository": {
     "type": "git",
@@ -19,7 +20,7 @@
   "dependencies": {
     "async": "^0.9.0",
     "colors": "~0.6.0-1",
-    "gaze": "^0.6.4",
+    "gaze": "0.5.1",
     "google": "0.3.3",
     "lodash": "~1.2.1",
     "mkdirp": "~0.3.5",

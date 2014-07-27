@@ -22,6 +22,7 @@ module.exports = class File
     @srcPath = p
     { @config, @argv } = @group
     console.log "NEW FILE #{p}".yellow if @argv.debug
+    return if /\bsample\b/i.test @srcPath
     @orig = @file = path.basename @srcPath
     @data = {}
     #extract important data, remove rubbish
@@ -45,8 +46,6 @@ module.exports = class File
       @preference = 'series'
       @data.season = parseInt @data.season, 10
       @data.episode = parseInt @data.episode, 10
-    else
-      @preference = 'movie'
 
     @data.title = @data.title.replace /(^\s+|\s+$)/g,''
     @valid = true
@@ -78,7 +77,7 @@ module.exports = class File
     str.replace /{{\s*(\w+)\s*}}/g, (s,key) -> obj[key]
 
   move: ->
-    mov = @preference is 'movie'
+    mov = @preference isnt 'series'
 
     typeConfig = @config[if mov then 'movies' else 'tvShows']
 
