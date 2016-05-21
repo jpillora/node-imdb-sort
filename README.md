@@ -1,3 +1,9 @@
+
+This version is no longer being supported. It has been rewritten in Go and can be found here https://github.com/jpillora/media-sort.
+
+---
+
+
 node-imdb-sort
 ==============
 
